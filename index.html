@@ -374,7 +374,7 @@
         <div class="card-header">
           <div>
             <div class="card-title">Dein Setup</div>
-            <div class="card-subtitle">Großzügige Einschätzung – du kannst später feintunen.</div>
+            <div class="card-subtitle">Grobe Einschätzung – du kannst später feintunen.</div>
           </div>
         </div>
 
@@ -425,6 +425,18 @@
             <option value="8">8 GB</option>
             <option value="16" selected>16 GB</option>
             <option value="32">32+ GB</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>Priorität</span>
+            <span class="helper">Performance vs. Qualität</span>
+          </label>
+          <select id="profileMode">
+            <option value="balanced" selected>Ausbalanciert</option>
+            <option value="performance">Maximale FPS</option>
+            <option value="quality">Maximale Grafikqualität</option>
           </select>
         </div>
 
@@ -484,7 +496,7 @@
     </div>
 
     <div class="footer">
-      <span>Hinweis: GSOpt v0.1 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.</span>
+      <span>Hinweis: GSOpt v0.2 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.</span>
       <span>Später: exakte GPU-/CPU-Modelle, Benchmarks & Feintuning-Profile.</span>
     </div>
   </div>
@@ -495,6 +507,7 @@
     const ram = document.getElementById("ram");
     const res = document.getElementById("resolution");
     const game = document.getElementById("game");
+    const profileMode = document.getElementById("profileMode");
 
     const cpuLabel = document.getElementById("cpuLabel");
     const gpuLabel = document.getElementById("gpuLabel");
@@ -564,8 +577,7 @@
       return cpuScore + gpuScore + ramScore - resPenalty;
     }
 
-    function getGameProfile(gameId, powerScore, resolution) {
-      // sehr grobe Heuristik pro Spiel
+    function getGameProfile(gameId, powerScore, resolution, mode) {
       const resLabel = resolution === 1080 ? "1080p" : (resolution === 1440 ? "1440p" : "4K");
 
       const base = {
@@ -695,6 +707,23 @@
           base.tips = "Nutze dieses Profil als Ausgangspunkt und passe es im Spiel nach Gefühl an.";
       }
 
+      // Mode-Anpassungen (global je Spiel)
+      if (mode === "performance") {
+        base.tags.push("Performance-Modus");
+        base.settings.unshift("Reduziere Schatten-, Post-Processing- und Effekte-Qualität um eine Stufe.");
+        if (!base.preset.toLowerCase().includes("performance") && !base.preset.toLowerCase().includes("performance")) {
+          base.preset = base.preset + " (FPS-fokussiert)";
+        }
+      } else if (mode === "quality") {
+        base.tags.push("Quality-Modus");
+        base.settings.unshift("Falls FPS ausreichen: erhöhe Textur- und Effektqualität um eine Stufe.");
+        if (!base.preset.toLowerCase().includes("quality") && !base.preset.toLowerCase().includes("hoch")) {
+          base.preset = base.preset + " (Qualitätsfokus)";
+        }
+      } else {
+        base.tags.push("Balanced");
+      }
+
       return base;
     }
 
@@ -702,8 +731,9 @@
       const power = calcPowerScore();
       const gameId = game.value;
       const resolution = Number(res.value);
+      const mode = profileMode.value;
 
-      const profile = getGameProfile(gameId, power, resolution);
+      const profile = getGameProfile(gameId, power, resolution, mode);
 
       fpsRange.textContent = profile.fps;
       summarySubtitle.textContent = `Profil: ${profile.preset} · Power-Score: ${power}`;
@@ -723,7 +753,7 @@
         settingsList.appendChild(li);
       });
 
-      tipsBox.innerHTML = `<strong Tipp:</strong> ${profile.tips}`;
+      tipsBox.innerHTML = `<strong>Tipp:</strong> ${profile.tips}`;
       outputMain.style.display = "flex";
     });
 
