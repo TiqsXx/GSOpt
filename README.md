@@ -2,6 +2,7 @@
 
 GSOpt is a clean, modern web tool that recommends optimal game settings based on your hardware and resolution.  
 It aims to give players fast, reliable, and easy-to-understand performance guidance across popular games.
+https://gs-opt.vercel.app 
 
 ---
 
