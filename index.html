@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>GSOpt – Game Settings Optimizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #020617;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59, 130, 246, 0.12);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --radius-xl: 18px;
+      --radius-lg: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.98));
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(148,163,184,0.1);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(15,23,42,0.8);
+      backdrop-filter: blur(18px);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.35);
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #4ade80, #16a34a);
+      box-shadow: 0 0 12px rgba(34,197,94,0.7);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), rgba(15,23,42,1));
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 16px;
+      border: 1px solid rgba(30,64,175,0.35);
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid rgba(148,163,184,0.18);
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .card.secondary {
+      border-color: rgba(55,65,81,0.9);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      opacity: 0.85;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+
+    .helper {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(55,65,81,0.9);
+      background: rgba(15,23,42,0.9);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(59,130,246,0.6);
+      background: rgba(15,23,42,1);
+    }
+
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    input[type="range"] {
+      padding: 0;
+      background: transparent;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 999px;
+      margin-top: 4px;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(to right, rgba(55,65,81,1), rgba(59,130,246,0.9));
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      margin-top: -6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      border: 2px solid var(--accent);
+      box-shadow: 0 0 0 3px rgba(15,23,42,0.9);
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      background: radial-gradient(circle at 0% 0%, #60a5fa, #2563eb);
+      color: white;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow:
+        0 12px 30px rgba(37,99,235,0.6),
+        0 0 22px rgba(59,130,246,0.9);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+      box-shadow:
+        0 18px 40px rgba(37,99,235,0.8),
+        0 0 28px rgba(59,130,246,1);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow:
+        0 5px 18px rgba(15,23,42,1),
+        0 0 16px rgba(59,130,246,0.9);
+    }
+
+    .output-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fps-pill {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 0% 50%, rgba(52,211,153,0.25), rgba(15,23,42,0.98));
+      border: 1px solid rgba(52,211,153,0.5);
+      font-size: 13px;
+    }
+
+    .fps-pill span.value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.95);
+      border: 1px solid rgba(55,65,81,0.9);
+      color: var(--muted);
+    }
+
+    .settings-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .settings-list li {
+      margin-bottom: 3px;
+    }
+
+    .tips {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(15,23,42,0.96);
+      border: 1px dashed rgba(75,85,99,0.9);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .tips strong {
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 780px) {
+      .app {
+        padding: 18px;
+      }
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="title">
+        <h1>
+          GSOpt
+          <span class="badge">Game Settings Optimizer</span>
+        </h1>
+        <p class="subtitle">
+          Wähle deine Hardware, dein Spiel und deine Auflösung – GSOpt schlägt dir ein balanciertes Grafik-Setup vor.
+        </p>
+      </div>
+      <div>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          Live-Empfehlung basierend auf deinem Setup
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Input Card -->
+      <div class="card secondary">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Dein Setup</div>
+            <div class="card-subtitle">Großzügige Einschätzung – du kannst später feintunen.</div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>Spiel</span>
+            <span class="helper" id="gameLabelHint">Valorant</span>
+          </label>
+          <select id="game">
+            <option value="valorant">Valorant</option>
+            <option value="fortnite">Fortnite</option>
+            <option value="warzone">Warzone</option>
+            <option value="minecraft">Minecraft (Java/Bedrock)</option>
+            <option value="arcreactors">Arc Raiders</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>CPU-Leistung</span>
+            <span class="helper" id="cpuLabel">Mittlerer Gaming-CPU</span>
+          </label>
+          <input type="range" id="cpu" min="1" max="5" value="3" />
+          <div class="range-labels">
+            <span>Büro / sehr alt</span>
+            <span>High-End</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>GPU-Leistung</span>
+            <span class="helper" id="gpuLabel">Mittelklasse-GPU (z.B. RTX 3060)</span>
+          </label>
+          <input type="range" id="gpu" min="1" max="5" value="3" />
+          <div class="range-labels">
+            <span>Einsteiger</span>
+            <span>Enthusiast</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>RAM</span>
+            <span class="helper" id="ramLabel">16 GB</span>
+          </label>
+          <select id="ram">
+            <option value="8">8 GB</option>
+            <option value="16" selected>16 GB</option>
+            <option value="32">32+ GB</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>
+            <span>Auflösung</span>
+            <span class="helper">Native Monitorauflösung</span>
+          </label>
+          <select id="resolution">
+            <option value="1080">1080p (1920×1080)</option>
+            <option value="1440">1440p (2560×1440)</option>
+            <option value="2160">4K (3840×2160)</option>
+          </select>
+        </div>
+
+        <button class="btn-primary" id="calcBtn">
+          <span>Optimale Settings berechnen</span>
+          <span>➜</span>
+        </button>
+      </div>
+
+      <!-- Output Card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Empfohlene Settings</div>
+            <div class="card-subtitle" id="summarySubtitle">
+              Wähle dein Setup und klicke auf „Berechnen“.
+            </div>
+          </div>
+        </div>
+
+        <div class="output-main" id="outputMain" style="display:none;">
+          <div>
+            <div class="fps-pill">
+              Erwartete FPS:
+              <span class="value" id="fpsRange">–</span>
+            </div>
+          </div>
+
+          <div class="tag-row" id="tagRow">
+            <!-- tags via JS -->
+          </div>
+
+          <div>
+            <h3 style="margin: 8px 0 4px; font-size: 13px;">Grafik-Setup:</h3>
+            <ul class="settings-list" id="settingsList">
+              <!-- list via JS -->
+            </ul>
+          </div>
+
+          <div class="tips" id="tipsBox">
+            <!-- tips via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Hinweis: GSOpt v0.1 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.</span>
+      <span>Später: exakte GPU-/CPU-Modelle, Benchmarks & Feintuning-Profile.</span>
+    </div>
+  </div>
+
+  <script>
+    const cpu = document.getElementById("cpu");
+    const gpu = document.getElementById("gpu");
+    const ram = document.getElementById("ram");
+    const res = document.getElementById("resolution");
+    const game = document.getElementById("game");
+
+    const cpuLabel = document.getElementById("cpuLabel");
+    const gpuLabel = document.getElementById("gpuLabel");
+    const ramLabel = document.getElementById("ramLabel");
+    const summarySubtitle = document.getElementById("summarySubtitle");
+    const outputMain = document.getElementById("outputMain");
+    const fpsRange = document.getElementById("fpsRange");
+    const tagRow = document.getElementById("tagRow");
+    const settingsList = document.getElementById("settingsList");
+    const tipsBox = document.getElementById("tipsBox");
+    const gameLabelHint = document.getElementById("gameLabelHint");
+
+    function mapCpuLabel(v) {
+      const val = Number(v);
+      if (val <= 1) return "Sehr schwach / alt";
+      if (val === 2) return "Einsteiger-Gaming (i3/Ryzen 3)";
+      if (val === 3) return "Mittlerer Gaming-CPU";
+      if (val === 4) return "Starker Gaming-CPU (i7/Ryzen 7)";
+      return "High-End / aktuelles Topmodell";
+    }
+
+    function mapGpuLabel(v) {
+      const val = Number(v);
+      if (val <= 1) return "iGPU / sehr alte Karte";
+      if (val === 2) return "Einsteiger-GPU (z.B. GTX 1650)";
+      if (val === 3) return "Mittelklasse-GPU (z.B. RTX 3060)";
+      if (val === 4) return "Oberklasse (z.B. RTX 4070)";
+      return "High-End (RTX 4080/4090, RX 7900)";
+    }
+
+    function mapRamLabel(v) {
+      if (v === "8") return "8 GB (Minimum)";
+      if (v === "16") return "16 GB";
+      return "32+ GB";
+    }
+
+    cpu.addEventListener("input", () => {
+      cpuLabel.textContent = mapCpuLabel(cpu.value);
+    });
+
+    gpu.addEventListener("input", () => {
+      gpuLabel.textContent = mapGpuLabel(gpu.value);
+    });
+
+    ram.addEventListener("change", () => {
+      ramLabel.textContent = mapRamLabel(ram.value);
+    });
+
+    game.addEventListener("change", () => {
+      const map = {
+        "valorant": "Valorant",
+        "fortnite": "Fortnite",
+        "warzone": "Warzone",
+        "minecraft": "Minecraft",
+        "arcreactors": "Arc Raiders"
+      };
+      gameLabelHint.textContent = map[game.value] || "Game";
+    });
+
+    function calcPowerScore() {
+      const cpuScore = Number(cpu.value) * 12;
+      const gpuScore = Number(gpu.value) * 16;
+      const ramVal = Number(ram.value);
+      const ramScore = ramVal <= 8 ? 0 : (ramVal === 16 ? 8 : 14);
+      const resVal = Number(res.value);
+      const resPenalty = resVal === 1080 ? 0 : (resVal === 1440 ? 12 : 24);
+      return cpuScore + gpuScore + ramScore - resPenalty;
+    }
+
+    function getGameProfile(gameId, powerScore, resolution) {
+      // sehr grobe Heuristik pro Spiel
+      const resLabel = resolution === 1080 ? "1080p" : (resolution === 1440 ? "1440p" : "4K");
+
+      const base = {
+        preset: "Ausbalanciert",
+        fps: "60–90",
+        tags: [],
+        settings: [],
+        tips: ""
+      };
+
+      function clampFps(txtLow, txtMid, txtHigh) {
+        if (powerScore < 40) return txtLow;
+        if (powerScore < 70) return txtMid;
+        return txtHigh;
+      }
+
+      switch (gameId) {
+        case "valorant":
+          base.preset = powerScore >= 55 ? "Competitive Low/Medium" : "Low für maximale FPS";
+          base.fps = clampFps("80–140", "140–220", "220–400+");
+          base.tags = [
+            "eSports-Fokus",
+            `${resLabel}`,
+            powerScore >= 55 ? "120+ Hz sinnvoll" : "60–75 Hz okay"
+          ];
+          base.settings = [
+            "Texturen: Mittel",
+            "Schatten: Aus oder Niedrig",
+            "Anti-Aliasing: MSAA 2x oder FXAA",
+            "V-Sync: Aus (Input-Lag vermeiden)",
+            "FPS-Limit knapp über Monitor-Refresh"
+          ];
+          base.tips = "Valorant ist CPU-sensitiv. Hintergrundprogramme schließen, Ingame-Overlay (z.B. Discord, GeForce Experience) minimieren und Windows-Energieplan auf 'Höchstleistung' stellen.";
+          break;
+
+        case "fortnite":
+          base.preset = powerScore < 45 ? "Performance Mode / Low" :
+                        powerScore < 70 ? "Mittel / Competitive" :
+                        "Hoch mit FSR / TSR";
+          base.fps = clampFps("60–90", "90–140", "140–200+");
+          base.tags = [
+            "Unreal Engine",
+            `${resLabel}`,
+            powerScore >= 70 ? "TSR Quality" : "Resolution Scale 85–90%"
+          ];
+          base.settings = [
+            "View Distance: Hoch (Gameplay-Relevanz)",
+            "Shadows: Aus oder Niedrig",
+            "Effects / Post-Processing: Niedrig",
+            "Anti-Aliasing / TSR: Mittel",
+            "Nanite / Lumen nur mit starker GPU aktivieren"
+          ];
+          base.tips = "Im Performance Mode gewinnt man viele FPS. Außerdem: DirectX 12 nur nutzen, wenn stabil. Treiber aktuell halten und Fortnite-eigenes FPS-Limit nutzen.";
+          break;
+
+        case "warzone":
+          base.preset = powerScore < 45 ? "Optimiert Low/Medium" :
+                        powerScore < 70 ? "Balanced" :
+                        "High + Upscaling (DLSS/FSR Balanced)";
+          base.fps = clampFps("60–80", "80–120", "120–160+");
+          base.tags = [
+            "Warzone 2 / MWII Engine",
+            `${resLabel}`,
+            "VRAM im Auge behalten"
+          ];
+          base.settings = [
+            "Texturen: Mittel (VRAM abhängig)",
+            "Shadows / Spot Cache: Niedrig–Mittel",
+            "Particle Quality: Niedrig",
+            "DLSS/FSR: Performance oder Balanced bei 1440p/4K",
+            "Field of View (FOV): nach Geschmack, 100–110 für Comp"
+          ];
+          base.tips = "Warzone ist VRAM-hungrig. VRAM-Anzeige im Menü beobachten und Texturen ggf. senken. Disk-Shader-Cache in den Grafiktreibern aktivieren und Windows Game Mode einschalten.";
+          break;
+
+        case "minecraft":
+          base.preset = powerScore < 40 ? "Vanilla ohne Shader" :
+                        powerScore < 70 ? "Vanilla + leichte Shader" :
+                        "Shader + hohe Sichtweite";
+          base.fps = clampFps("80–160", "160–240", "240–400+");
+          base.tags = [
+            "CPU + RAM relevant",
+            `${resLabel}`,
+            powerScore >= 70 ? "Shader möglich" : "Performance-Modpacks nutzen"
+          ];
+          base.settings = [
+            "Render Distance: 8–12 Chunks (Low/Mid), 16+ bei starkem Setup",
+            "Simulation Distance: etwas niedriger als Render Distance",
+            "V-Sync nach Geschmack, FPS-Limit setzen",
+            "Bei Mods: Sodium, Lithium, Starlight etc. nutzen",
+            "Shader nur mit starker GPU aktivieren"
+          ];
+          base.tips = "Minecraft profitiert stark von mehr RAM-Zuweisung (aber nicht übertreiben). Java-Version und Modloader aktuell halten. Für FPS-Boost: Fabric + Performance-Mods verwenden.";
+          break;
+
+        case "arcreactors": // Arc Raiders (Platzhalter-ID)
+          base.preset = powerScore < 45 ? "Low/Medium Fokus Performance" :
+                        powerScore < 70 ? "Balanced mit Upscaling" :
+                        "High bei 1080p/1440p, Balanced bei 4K";
+          base.fps = clampFps("50–70", "70–100", "100–130+");
+          base.tags = [
+            "Cinematic Shooter",
+            `${resLabel}`,
+            "Upscaling empfohlen"
+          ];
+          base.settings = [
+            "Texturen: Hoch, wenn VRAM ≥ 8 GB",
+            "Shadows: Mittel",
+            "Ambient Occlusion: Mittel",
+            "Motion Blur: Aus (Geschmackssache)",
+            "DLSS/FSR: Balanced bei 1440p/4K"
+          ];
+          base.tips = "Für neue Titel oft: Day-1-Patch + neueste GPU-Treiber installieren. In den Grafikoptionen Motion Blur, Film Grain und Chromatic Aberration deaktivieren, um Klarheit und Performance zu verbessern.";
+          break;
+
+        default:
+          base.preset = "Ausbalanciert";
+          base.fps = "60–90";
+          base.tags = [`${resLabel}`, "Standard-Profil"];
+          base.settings = [
+            "Texturen: Mittel",
+            "Schatten: Niedrig–Mittel",
+            "Post-Processing: Niedrig",
+            "Anti-Aliasing: Mittel",
+            "V-Sync: Aus, FPS-Limit knapp über Hertz-Zahl"
+          ];
+          base.tips = "Nutze dieses Profil als Ausgangspunkt und passe es im Spiel nach Gefühl an.";
+      }
+
+      return base;
+    }
+
+    document.getElementById("calcBtn").addEventListener("click", () => {
+      const power = calcPowerScore();
+      const gameId = game.value;
+      const resolution = Number(res.value);
+
+      const profile = getGameProfile(gameId, power, resolution);
+
+      fpsRange.textContent = profile.fps;
+      summarySubtitle.textContent = `Profil: ${profile.preset} · Power-Score: ${power}`;
+
+      tagRow.innerHTML = "";
+      profile.tags.forEach(t => {
+        const span = document.createElement("span");
+        span.className = "tag";
+        span.textContent = t;
+        tagRow.appendChild(span);
+      });
+
+      settingsList.innerHTML = "";
+      profile.settings.forEach(s => {
+        const li = document.createElement("li");
+        li.textContent = s;
+        settingsList.appendChild(li);
+      });
+
+      tipsBox.innerHTML = `<strong Tipp:</strong> ${profile.tips}`;
+      outputMain.style.display = "flex";
+    });
+
+    // Init labels
+    cpuLabel.textContent = mapCpuLabel(cpu.value);
+    gpuLabel.textContent = mapGpuLabel(gpu.value);
+    ramLabel.textContent = mapRamLabel(ram.value);
+  </script>
+</body>
+</html>
