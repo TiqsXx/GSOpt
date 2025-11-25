@@ -85,6 +85,29 @@
       color: var(--muted);
     }
 
+    .lang-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-bottom: 4px;
+    }
+
+    .lang-switch label {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .lang-select {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: rgba(15,23,42,0.9);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
     .pill {
       padding: 8px 12px;
       border-radius: 999px;
@@ -354,14 +377,21 @@
       <div class="title">
         <h1>
           GSOpt
-          <span class="badge">Game Settings Optimizer</span>
+          <span class="badge" id="badge">Game Settings Optimizer</span>
         </h1>
-        <p class="subtitle">
+        <p class="subtitle" id="subtitle">
           Wähle deine Hardware, dein Spiel und deine Auflösung – GSOpt schlägt dir ein balanciertes Grafik-Setup vor.
         </p>
       </div>
       <div>
-        <div class="pill">
+        <div class="lang-switch">
+          <label for="lang">Language</label>
+          <select id="lang" class="lang-select">
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <div class="pill" id="livePill">
           <span class="pill-dot"></span>
           Live-Empfehlung basierend auf deinem Setup
         </div>
@@ -373,14 +403,14 @@
       <div class="card secondary">
         <div class="card-header">
           <div>
-            <div class="card-title">Dein Setup</div>
-            <div class="card-subtitle">Grobe Einschätzung – du kannst später feintunen.</div>
+            <div class="card-title" id="cardInputTitle">Dein Setup</div>
+            <div class="card-subtitle" id="cardInputSubtitle">Grobe Einschätzung – du kannst später feintunen.</div>
           </div>
         </div>
 
         <div class="input-group">
           <label>
-            <span>Spiel</span>
+            <span id="labelGame">Spiel</span>
             <span class="helper" id="gameLabelHint">Valorant</span>
           </label>
           <select id="game">
@@ -394,31 +424,31 @@
 
         <div class="input-group">
           <label>
-            <span>CPU-Leistung</span>
+            <span id="labelCpu">CPU-Leistung</span>
             <span class="helper" id="cpuLabel">Mittlerer Gaming-CPU</span>
           </label>
           <input type="range" id="cpu" min="1" max="5" value="3" />
           <div class="range-labels">
-            <span>Büro / sehr alt</span>
-            <span>High-End</span>
+            <span id="cpuLow">Büro / sehr alt</span>
+            <span id="cpuHigh">High-End</span>
           </div>
         </div>
 
         <div class="input-group">
           <label>
-            <span>GPU-Leistung</span>
+            <span id="labelGpu">GPU-Leistung</span>
             <span class="helper" id="gpuLabel">Mittelklasse-GPU (z.B. RTX 3060)</span>
           </label>
           <input type="range" id="gpu" min="1" max="5" value="3" />
           <div class="range-labels">
-            <span>Einsteiger</span>
-            <span>Enthusiast</span>
+            <span id="gpuLow">Einsteiger</span>
+            <span id="gpuHigh">Enthusiast</span>
           </div>
         </div>
 
         <div class="input-group">
           <label>
-            <span>RAM</span>
+            <span id="labelRam">RAM</span>
             <span class="helper" id="ramLabel">16 GB</span>
           </label>
           <select id="ram">
@@ -430,8 +460,8 @@
 
         <div class="input-group">
           <label>
-            <span>Priorität</span>
-            <span class="helper">Performance vs. Qualität</span>
+            <span id="labelProfile">Priorität</span>
+            <span class="helper" id="profileHelper">Performance vs. Qualität</span>
           </label>
           <select id="profileMode">
             <option value="balanced" selected>Ausbalanciert</option>
@@ -442,8 +472,8 @@
 
         <div class="input-group">
           <label>
-            <span>Auflösung</span>
-            <span class="helper">Native Monitorauflösung</span>
+            <span id="labelRes">Auflösung</span>
+            <span class="helper" id="resHelper">Native Monitorauflösung</span>
           </label>
           <select id="resolution">
             <option value="1080">1080p (1920×1080)</option>
@@ -453,7 +483,7 @@
         </div>
 
         <button class="btn-primary" id="calcBtn">
-          <span>Optimale Settings berechnen</span>
+          <span id="btnText">Optimale Settings berechnen</span>
           <span>➜</span>
         </button>
       </div>
@@ -462,7 +492,7 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Empfohlene Settings</div>
+            <div class="card-title" id="cardOutputTitle">Empfohlene Settings</div>
             <div class="card-subtitle" id="summarySubtitle">
               Wähle dein Setup und klicke auf „Berechnen“.
             </div>
@@ -472,7 +502,7 @@
         <div class="output-main" id="outputMain" style="display:none;">
           <div>
             <div class="fps-pill">
-              Erwartete FPS:
+              <span id="fpsLabel">Erwartete FPS:</span>
               <span class="value" id="fpsRange">–</span>
             </div>
           </div>
@@ -482,7 +512,7 @@
           </div>
 
           <div>
-            <h3 style="margin: 8px 0 4px; font-size: 13px;">Grafik-Setup:</h3>
+            <h3 style="margin: 8px 0 4px; font-size: 13px;" id="gfxSetupTitle">Grafik-Setup:</h3>
             <ul class="settings-list" id="settingsList">
               <!-- list via JS -->
             </ul>
@@ -496,12 +526,14 @@
     </div>
 
     <div class="footer">
-      <span>Hinweis: GSOpt v0.2 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.</span>
-      <span>Später: exakte GPU-/CPU-Modelle, Benchmarks & Feintuning-Profile.</span>
+      <span id="footerLeft">Hinweis: GSOpt v0.3 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.</span>
+      <span id="footerRight">Später: exakte GPU-/CPU-Modelle, Benchmarks & Feintuning-Profile.</span>
     </div>
   </div>
 
   <script>
+    const langSelect = document.getElementById("lang");
+
     const cpu = document.getElementById("cpu");
     const gpu = document.getElementById("gpu");
     const ram = document.getElementById("ram");
@@ -520,52 +552,136 @@
     const tipsBox = document.getElementById("tipsBox");
     const gameLabelHint = document.getElementById("gameLabelHint");
 
-    function mapCpuLabel(v) {
+    const badge = document.getElementById("badge");
+    const subtitle = document.getElementById("subtitle");
+    const livePill = document.getElementById("livePill");
+    const cardInputTitle = document.getElementById("cardInputTitle");
+    const cardInputSubtitle = document.getElementById("cardInputSubtitle");
+    const labelGame = document.getElementById("labelGame");
+    const labelCpu = document.getElementById("labelCpu");
+    const labelGpu = document.getElementById("labelGpu");
+    const labelRam = document.getElementById("labelRam");
+    const labelProfile = document.getElementById("labelProfile");
+    const profileHelper = document.getElementById("profileHelper");
+    const labelRes = document.getElementById("labelRes");
+    const resHelper = document.getElementById("resHelper");
+    const cpuLow = document.getElementById("cpuLow");
+    const cpuHigh = document.getElementById("cpuHigh");
+    const gpuLow = document.getElementById("gpuLow");
+    const gpuHigh = document.getElementById("gpuHigh");
+    const btnText = document.getElementById("btnText");
+    const cardOutputTitle = document.getElementById("cardOutputTitle");
+    const fpsLabel = document.getElementById("fpsLabel");
+    const gfxSetupTitle = document.getElementById("gfxSetupTitle");
+    const footerLeft = document.getElementById("footerLeft");
+    const footerRight = document.getElementById("footerRight");
+
+    const i18n = {
+      de: {
+        badge: "Game Settings Optimizer",
+        subtitle: "Wähle deine Hardware, dein Spiel und deine Auflösung – GSOpt schlägt dir ein balanciertes Grafik-Setup vor.",
+        livePill: "Live-Empfehlung basierend auf deinem Setup",
+        cardInputTitle: "Dein Setup",
+        cardInputSubtitle: "Grobe Einschätzung – du kannst später feintunen.",
+        labelGame: "Spiel",
+        labelCpu: "CPU-Leistung",
+        labelGpu: "GPU-Leistung",
+        labelRam: "RAM",
+        labelProfile: "Priorität",
+        profileHelper: "Performance vs. Qualität",
+        labelRes: "Auflösung",
+        resHelper: "Native Monitorauflösung",
+        cpuLow: "Büro / sehr alt",
+        cpuHigh: "High-End",
+        gpuLow: "Einsteiger",
+        gpuHigh: "Enthusiast",
+        btnText: "Optimale Settings berechnen",
+        cardOutputTitle: "Empfohlene Settings",
+        summaryIdle: "Wähle dein Setup und klicke auf „Berechnen“.",
+        fpsLabel: "Erwartete FPS:",
+        gfxSetupTitle: "Grafik-Setup:",
+        footerLeft: "Hinweis: GSOpt v0.3 – Schätzungen basieren auf Erfahrungswerten und typischen Setups.",
+        footerRight: "Später: exakte GPU-/CPU-Modelle, Benchmarks & Feintuning-Profile.",
+        tipLabel: "Tipp:",
+        profilePrefix: "Profil",
+        powerScore: "Power-Score"
+      },
+      en: {
+        badge: "Game Settings Optimizer",
+        subtitle: "Select your hardware, game, and resolution – GSOpt suggests a balanced graphics setup for you.",
+        livePill: "Live recommendation based on your setup",
+        cardInputTitle: "Your setup",
+        cardInputSubtitle: "Rough estimate – you can fine-tune later.",
+        labelGame: "Game",
+        labelCpu: "CPU performance",
+        labelGpu: "GPU performance",
+        labelRam: "RAM",
+        labelProfile: "Priority",
+        profileHelper: "Performance vs. quality",
+        labelRes: "Resolution",
+        resHelper: "Native monitor resolution",
+        cpuLow: "Office / very old",
+        cpuHigh: "High-end",
+        gpuLow: "Entry level",
+        gpuHigh: "Enthusiast",
+        btnText: "Calculate optimal settings",
+        cardOutputTitle: "Recommended settings",
+        summaryIdle: "Select your setup and click “Calculate”.",
+        fpsLabel: "Estimated FPS:",
+        gfxSetupTitle: "Graphics setup:",
+        footerLeft: "Note: GSOpt v0.3 – Estimates are based on typical setups and experience.",
+        footerRight: "Coming later: exact GPU/CPU models, benchmarks & fine-tuning profiles.",
+        tipLabel: "Tip:",
+        profilePrefix: "Profile",
+        powerScore: "Power score"
+      }
+    };
+
+    function mapCpuLabel(v, lang) {
       const val = Number(v);
-      if (val <= 1) return "Sehr schwach / alt";
-      if (val === 2) return "Einsteiger-Gaming (i3/Ryzen 3)";
-      if (val === 3) return "Mittlerer Gaming-CPU";
-      if (val === 4) return "Starker Gaming-CPU (i7/Ryzen 7)";
-      return "High-End / aktuelles Topmodell";
+      if (lang === "en") {
+        if (val <= 1) return "Very weak / old";
+        if (val === 2) return "Entry-level gaming (i3/Ryzen 3)";
+        if (val === 3) return "Mid-range gaming CPU";
+        if (val === 4) return "Strong gaming CPU (i7/Ryzen 7)";
+        return "High-end / current flagship";
+      } else {
+        if (val <= 1) return "Sehr schwach / alt";
+        if (val === 2) return "Einsteiger-Gaming (i3/Ryzen 3)";
+        if (val === 3) return "Mittlerer Gaming-CPU";
+        if (val === 4) return "Starker Gaming-CPU (i7/Ryzen 7)";
+        return "High-End / aktuelles Topmodell";
+      }
     }
 
-    function mapGpuLabel(v) {
+    function mapGpuLabel(v, lang) {
       const val = Number(v);
-      if (val <= 1) return "iGPU / sehr alte Karte";
-      if (val === 2) return "Einsteiger-GPU (z.B. GTX 1650)";
-      if (val === 3) return "Mittelklasse-GPU (z.B. RTX 3060)";
-      if (val === 4) return "Oberklasse (z.B. RTX 4070)";
-      return "High-End (RTX 4080/4090, RX 7900)";
+      if (lang === "en") {
+        if (val <= 1) return "iGPU / very old card";
+        if (val === 2) return "Entry GPU (e.g. GTX 1650)";
+        if (val === 3) return "Mid-range GPU (e.g. RTX 3060)";
+        if (val === 4) return "Upper mid-range (e.g. RTX 4070)";
+        return "High-end (RTX 4080/4090, RX 7900)";
+      } else {
+        if (val <= 1) return "iGPU / sehr alte Karte";
+        if (val === 2) return "Einsteiger-GPU (z.B. GTX 1650)";
+        if (val === 3) return "Mittelklasse-GPU (z.B. RTX 3060)";
+        if (val === 4) return "Oberklasse (z.B. RTX 4070)";
+        return "High-End (RTX 4080/4090, RX 7900)";
+      }
     }
 
-    function mapRamLabel(v) {
-      if (v === "8") return "8 GB (Minimum)";
-      if (v === "16") return "16 GB";
-      return "32+ GB";
+    function mapRamLabel(v, lang) {
+      if (lang === "en") {
+        if (v === "8") return "8 GB (minimum)";
+        if (v === "16") return "16 GB";
+        return "32+ GB";
+      } else {
+        if (v === "8") return "8 GB (Minimum)";
+        if (v === "16") return "16 GB";
+        return "32+ GB";
+      }
     }
-
-    cpu.addEventListener("input", () => {
-      cpuLabel.textContent = mapCpuLabel(cpu.value);
-    });
-
-    gpu.addEventListener("input", () => {
-      gpuLabel.textContent = mapGpuLabel(gpu.value);
-    });
-
-    ram.addEventListener("change", () => {
-      ramLabel.textContent = mapRamLabel(ram.value);
-    });
-
-    game.addEventListener("change", () => {
-      const map = {
-        "valorant": "Valorant",
-        "fortnite": "Fortnite",
-        "warzone": "Warzone",
-        "minecraft": "Minecraft",
-        "arcreactors": "Arc Raiders"
-      };
-      gameLabelHint.textContent = map[game.value] || "Game";
-    });
 
     function calcPowerScore() {
       const cpuScore = Number(cpu.value) * 12;
@@ -577,11 +693,11 @@
       return cpuScore + gpuScore + ramScore - resPenalty;
     }
 
-    function getGameProfile(gameId, powerScore, resolution, mode) {
+    function getGameProfile(gameId, powerScore, resolution, mode, lang) {
       const resLabel = resolution === 1080 ? "1080p" : (resolution === 1440 ? "1440p" : "4K");
 
       const base = {
-        preset: "Ausbalanciert",
+        preset: lang === "en" ? "Balanced" : "Ausbalanciert",
         fps: "60–90",
         tags: [],
         settings: [],
@@ -596,153 +712,349 @@
 
       switch (gameId) {
         case "valorant":
-          base.preset = powerScore >= 55 ? "Competitive Low/Medium" : "Low für maximale FPS";
+          base.preset =
+            powerScore >= 55
+              ? (lang === "en" ? "Competitive Low/Medium" : "Competitive Low/Medium")
+              : (lang === "en" ? "Low for maximum FPS" : "Low für maximale FPS");
           base.fps = clampFps("80–140", "140–220", "220–400+");
           base.tags = [
-            "eSports-Fokus",
-            `${resLabel}`,
-            powerScore >= 55 ? "120+ Hz sinnvoll" : "60–75 Hz okay"
+            lang === "en" ? "eSports focus" : "eSports-Fokus",
+            resLabel,
+            powerScore >= 55
+              ? (lang === "en" ? "120+ Hz recommended" : "120+ Hz sinnvoll")
+              : (lang === "en" ? "60–75 Hz okay" : "60–75 Hz okay")
           ];
-          base.settings = [
+          base.settings = lang === "en" ? [
+            "Textures: Medium",
+            "Shadows: Off or Low",
+            "Anti-Aliasing: MSAA 2x or FXAA",
+            "V-Sync: Off (avoid input lag)",
+            "FPS limit slightly above monitor refresh rate"
+          ] : [
             "Texturen: Mittel",
             "Schatten: Aus oder Niedrig",
             "Anti-Aliasing: MSAA 2x oder FXAA",
             "V-Sync: Aus (Input-Lag vermeiden)",
             "FPS-Limit knapp über Monitor-Refresh"
           ];
-          base.tips = "Valorant ist CPU-sensitiv. Hintergrundprogramme schließen, Ingame-Overlay (z.B. Discord, GeForce Experience) minimieren und Windows-Energieplan auf 'Höchstleistung' stellen.";
+          base.tips = lang === "en"
+            ? "Valorant is CPU-sensitive. Close background programs, minimize in-game overlays (Discord, GeForce Experience), and set the Windows power plan to “High performance”."
+            : "Valorant ist CPU-sensitiv. Hintergrundprogramme schließen, Ingame-Overlay (z.B. Discord, GeForce Experience) minimieren und Windows-Energieplan auf „Höchstleistung“ stellen.";
           break;
 
         case "fortnite":
-          base.preset = powerScore < 45 ? "Performance Mode / Low" :
-                        powerScore < 70 ? "Mittel / Competitive" :
-                        "Hoch mit FSR / TSR";
+          base.preset =
+            powerScore < 45
+              ? (lang === "en" ? "Performance mode / Low" : "Performance Mode / Low")
+              : powerScore < 70
+              ? (lang === "en" ? "Medium / Competitive" : "Mittel / Competitive")
+              : (lang === "en" ? "High with FSR / TSR" : "Hoch mit FSR / TSR");
           base.fps = clampFps("60–90", "90–140", "140–200+");
           base.tags = [
             "Unreal Engine",
-            `${resLabel}`,
-            powerScore >= 70 ? "TSR Quality" : "Resolution Scale 85–90%"
+            resLabel,
+            powerScore >= 70
+              ? (lang === "en" ? "TSR Quality" : "TSR Quality")
+              : (lang === "en" ? "Resolution scale 85–90%" : "Resolution Scale 85–90%")
           ];
-          base.settings = [
+          base.settings = lang === "en" ? [
+            "View Distance: High (important for gameplay)",
+            "Shadows: Off or Low",
+            "Effects / Post-processing: Low",
+            "Anti-Aliasing / TSR: Medium",
+            "Enable Nanite / Lumen only with strong GPUs"
+          ] : [
             "View Distance: Hoch (Gameplay-Relevanz)",
             "Shadows: Aus oder Niedrig",
             "Effects / Post-Processing: Niedrig",
             "Anti-Aliasing / TSR: Mittel",
             "Nanite / Lumen nur mit starker GPU aktivieren"
           ];
-          base.tips = "Im Performance Mode gewinnt man viele FPS. Außerdem: DirectX 12 nur nutzen, wenn stabil. Treiber aktuell halten und Fortnite-eigenes FPS-Limit nutzen.";
+          base.tips = lang === "en"
+            ? "Performance Mode can give a massive FPS boost. Only use DirectX 12 if it’s stable. Keep drivers up to date and use Fortnite’s internal FPS limit."
+            : "Im Performance Mode gewinnt man viele FPS. Außerdem: DirectX 12 nur nutzen, wenn stabil. Treiber aktuell halten und Fortnite-eigenes FPS-Limit nutzen.";
           break;
 
         case "warzone":
-          base.preset = powerScore < 45 ? "Optimiert Low/Medium" :
-                        powerScore < 70 ? "Balanced" :
-                        "High + Upscaling (DLSS/FSR Balanced)";
+          base.preset =
+            powerScore < 45
+              ? (lang === "en" ? "Optimized Low/Medium" : "Optimiert Low/Medium")
+              : powerScore < 70
+              ? (lang === "en" ? "Balanced" : "Balanced")
+              : (lang === "en" ? "High + Upscaling (DLSS/FSR Balanced)" : "High + Upscaling (DLSS/FSR Balanced)");
           base.fps = clampFps("60–80", "80–120", "120–160+");
           base.tags = [
-            "Warzone 2 / MWII Engine",
-            `${resLabel}`,
-            "VRAM im Auge behalten"
+            lang === "en" ? "Warzone 2 / MWII engine" : "Warzone 2 / MWII Engine",
+            resLabel,
+            lang === "en" ? "Keep an eye on VRAM" : "VRAM im Auge behalten"
           ];
-          base.settings = [
+          base.settings = lang === "en" ? [
+            "Textures: Medium (depends on VRAM)",
+            "Shadows / Spot Cache: Low–Medium",
+            "Particle Quality: Low",
+            "DLSS/FSR: Performance or Balanced at 1440p/4K",
+            "Field of View (FOV): personal preference, 100–110 for competitive play"
+          ] : [
             "Texturen: Mittel (VRAM abhängig)",
             "Shadows / Spot Cache: Niedrig–Mittel",
             "Particle Quality: Niedrig",
             "DLSS/FSR: Performance oder Balanced bei 1440p/4K",
             "Field of View (FOV): nach Geschmack, 100–110 für Comp"
           ];
-          base.tips = "Warzone ist VRAM-hungrig. VRAM-Anzeige im Menü beobachten und Texturen ggf. senken. Disk-Shader-Cache in den Grafiktreibern aktivieren und Windows Game Mode einschalten.";
+          base.tips = lang === "en"
+            ? "Warzone is very VRAM heavy. Watch the VRAM indicator and lower texture quality if needed. Enable shader cache in your GPU driver and turn on Windows Game Mode."
+            : "Warzone ist VRAM-hungrig. VRAM-Anzeige im Menü beobachten und Texturen ggf. senken. Disk-Shader-Cache in den Grafiktreibern aktivieren und Windows Game Mode einschalten.";
           break;
 
         case "minecraft":
-          base.preset = powerScore < 40 ? "Vanilla ohne Shader" :
-                        powerScore < 70 ? "Vanilla + leichte Shader" :
-                        "Shader + hohe Sichtweite";
+          base.preset =
+            powerScore < 40
+              ? (lang === "en" ? "Vanilla without shaders" : "Vanilla ohne Shader")
+              : powerScore < 70
+              ? (lang === "en" ? "Vanilla + light shaders" : "Vanilla + leichte Shader")
+              : (lang === "en" ? "Shaders + high view distance" : "Shader + hohe Sichtweite");
           base.fps = clampFps("80–160", "160–240", "240–400+");
           base.tags = [
-            "CPU + RAM relevant",
-            `${resLabel}`,
-            powerScore >= 70 ? "Shader möglich" : "Performance-Modpacks nutzen"
+            lang === "en" ? "CPU + RAM heavy" : "CPU + RAM relevant",
+            resLabel,
+            powerScore >= 70
+              ? (lang === "en" ? "Shaders possible" : "Shader möglich")
+              : (lang === "en" ? "Use performance modpacks" : "Performance-Modpacks nutzen")
           ];
-          base.settings = [
+          base.settings = lang === "en" ? [
+            "Render Distance: 8–12 chunks (low/mid), 16+ on strong setups",
+            "Simulation Distance: slightly lower than render distance",
+            "V-Sync optional, set FPS limit",
+            "For mods: use Sodium, Lithium, Starlight etc.",
+            "Only enable heavy shaders with a strong GPU"
+          ] : [
             "Render Distance: 8–12 Chunks (Low/Mid), 16+ bei starkem Setup",
             "Simulation Distance: etwas niedriger als Render Distance",
             "V-Sync nach Geschmack, FPS-Limit setzen",
             "Bei Mods: Sodium, Lithium, Starlight etc. nutzen",
             "Shader nur mit starker GPU aktivieren"
           ];
-          base.tips = "Minecraft profitiert stark von mehr RAM-Zuweisung (aber nicht übertreiben). Java-Version und Modloader aktuell halten. Für FPS-Boost: Fabric + Performance-Mods verwenden.";
+          base.tips = lang === "en"
+            ? "Minecraft benefits from more RAM allocation (but don’t overdo it). Keep Java and your mod loader up to date. For FPS boosts, use Fabric + performance mods."
+            : "Minecraft profitiert stark von mehr RAM-Zuweisung (aber nicht übertreiben). Java-Version und Modloader aktuell halten. Für FPS-Boost: Fabric + Performance-Mods verwenden.";
           break;
 
-        case "arcreactors": // Arc Raiders (Platzhalter-ID)
-          base.preset = powerScore < 45 ? "Low/Medium Fokus Performance" :
-                        powerScore < 70 ? "Balanced mit Upscaling" :
-                        "High bei 1080p/1440p, Balanced bei 4K";
+        case "arcreactors": // Arc Raiders placeholder
+          base.preset =
+            powerScore < 45
+              ? (lang === "en" ? "Low/Medium, performance focus" : "Low/Medium Fokus Performance")
+              : powerScore < 70
+              ? (lang === "en" ? "Balanced with upscaling" : "Balanced mit Upscaling")
+              : (lang === "en" ? "High at 1080p/1440p, Balanced at 4K" : "High bei 1080p/1440p, Balanced bei 4K");
           base.fps = clampFps("50–70", "70–100", "100–130+");
           base.tags = [
-            "Cinematic Shooter",
-            `${resLabel}`,
-            "Upscaling empfohlen"
+            lang === "en" ? "Cinematic shooter" : "Cinematic Shooter",
+            resLabel,
+            lang === "en" ? "Upscaling recommended" : "Upscaling empfohlen"
           ];
-          base.settings = [
+          base.settings = lang === "en" ? [
+            "Textures: High if VRAM ≥ 8 GB",
+            "Shadows: Medium",
+            "Ambient Occlusion: Medium",
+            "Motion Blur: Off (preference)",
+            "DLSS/FSR: Balanced at 1440p/4K"
+          ] : [
             "Texturen: Hoch, wenn VRAM ≥ 8 GB",
             "Shadows: Mittel",
             "Ambient Occlusion: Mittel",
             "Motion Blur: Aus (Geschmackssache)",
             "DLSS/FSR: Balanced bei 1440p/4K"
           ];
-          base.tips = "Für neue Titel oft: Day-1-Patch + neueste GPU-Treiber installieren. In den Grafikoptionen Motion Blur, Film Grain und Chromatic Aberration deaktivieren, um Klarheit und Performance zu verbessern.";
+          base.tips = lang === "en"
+            ? "For new titles: install day-one patches and the latest GPU drivers. Disable Motion Blur, Film Grain and Chromatic Aberration for clearer visuals and often more performance."
+            : "Für neue Titel oft: Day-1-Patch + neueste GPU-Treiber installieren. In den Grafikoptionen Motion Blur, Film Grain und Chromatic Aberration deaktivieren, um Klarheit und Performance zu verbessern.";
           break;
 
         default:
-          base.preset = "Ausbalanciert";
+          base.preset = lang === "en" ? "Balanced" : "Ausbalanciert";
           base.fps = "60–90";
-          base.tags = [`${resLabel}`, "Standard-Profil"];
-          base.settings = [
+          base.tags = [resLabel, lang === "en" ? "Standard profile" : "Standard-Profil"];
+          base.settings = lang === "en" ? [
+            "Textures: Medium",
+            "Shadows: Low–Medium",
+            "Post-processing: Low",
+            "Anti-Aliasing: Medium",
+            "V-Sync: Off, FPS cap slightly above refresh rate"
+          ] : [
             "Texturen: Mittel",
             "Schatten: Niedrig–Mittel",
             "Post-Processing: Niedrig",
             "Anti-Aliasing: Mittel",
             "V-Sync: Aus, FPS-Limit knapp über Hertz-Zahl"
           ];
-          base.tips = "Nutze dieses Profil als Ausgangspunkt und passe es im Spiel nach Gefühl an.";
+          base.tips = lang === "en"
+            ? "Use this profile as a starting point and fine-tune in-game based on how it feels."
+            : "Nutze dieses Profil als Ausgangspunkt und passe es im Spiel nach Gefühl an.";
       }
 
-      // Mode-Anpassungen (global je Spiel)
+      // Mode-based adjustments
       if (mode === "performance") {
-        base.tags.push("Performance-Modus");
-        base.settings.unshift("Reduziere Schatten-, Post-Processing- und Effekte-Qualität um eine Stufe.");
-        if (!base.preset.toLowerCase().includes("performance") && !base.preset.toLowerCase().includes("performance")) {
-          base.preset = base.preset + " (FPS-fokussiert)";
+        base.tags.push(lang === "en" ? "Performance mode" : "Performance-Modus");
+        base.settings.unshift(
+          lang === "en"
+            ? "Lower shadows, post-processing and effects by one step."
+            : "Reduziere Schatten-, Post-Processing- und Effekte-Qualität um eine Stufe."
+        );
+        if (!base.preset.toLowerCase().includes("performance") && !base.preset.toLowerCase().includes("fps")) {
+          base.preset += lang === "en" ? " (FPS focused)" : " (FPS-fokussiert)";
         }
       } else if (mode === "quality") {
-        base.tags.push("Quality-Modus");
-        base.settings.unshift("Falls FPS ausreichen: erhöhe Textur- und Effektqualität um eine Stufe.");
+        base.tags.push(lang === "en" ? "Quality mode" : "Quality-Modus");
+        base.settings.unshift(
+          lang === "en"
+            ? "If FPS are fine: increase texture and effects quality by one step."
+            : "Falls FPS ausreichen: erhöhe Textur- und Effektqualität um eine Stufe."
+        );
         if (!base.preset.toLowerCase().includes("quality") && !base.preset.toLowerCase().includes("hoch")) {
-          base.preset = base.preset + " (Qualitätsfokus)";
+          base.preset += lang === "en" ? " (quality focus)" : " (Qualitätsfokus)";
         }
       } else {
-        base.tags.push("Balanced");
+        base.tags.push(lang === "en" ? "Balanced" : "Balanced");
       }
 
       return base;
     }
 
+    function applyLanguage(lang) {
+      const t = i18n[lang];
+      badge.textContent = t.badge;
+      subtitle.textContent = t.subtitle;
+      livePill.childNodes[2].textContent = " " + t.livePill; // keep dot span
+      cardInputTitle.textContent = t.cardInputTitle;
+      cardInputSubtitle.textContent = t.cardInputSubtitle;
+      labelGame.textContent = t.labelGame;
+      labelCpu.textContent = t.labelCpu;
+      labelGpu.textContent = t.labelGpu;
+      labelRam.textContent = t.labelRam;
+      labelProfile.textContent = t.labelProfile;
+      profileHelper.textContent = t.profileHelper;
+      labelRes.textContent = t.labelRes;
+      resHelper.textContent = t.resHelper;
+      cpuLow.textContent = t.cpuLow;
+      cpuHigh.textContent = t.cpuHigh;
+      gpuLow.textContent = t.gpuLow;
+      gpuHigh.textContent = t.gpuHigh;
+      btnText.textContent = t.btnText;
+      cardOutputTitle.textContent = t.cardOutputTitle;
+      fpsLabel.textContent = t.fpsLabel;
+      gfxSetupTitle.textContent = t.gfxSetupTitle;
+      footerLeft.textContent = t.footerLeft;
+      footerRight.textContent = t.footerRight;
+
+      // Profile mode options
+      if (lang === "en") {
+        profileMode.options[0].textContent = "Balanced";
+        profileMode.options[1].textContent = "Maximum FPS";
+        profileMode.options[2].textContent = "Maximum quality";
+      } else {
+        profileMode.options[0].textContent = "Ausbalanciert";
+        profileMode.options[1].textContent = "Maximale FPS";
+        profileMode.options[2].textContent = "Maximale Grafikqualität";
+      }
+
+      // Game hint label
+      const gameMap = {
+        "valorant": "Valorant",
+        "fortnite": "Fortnite",
+        "warzone": "Warzone",
+        "minecraft": "Minecraft",
+        "arcreactors": "Arc Raiders"
+      };
+      gameLabelHint.textContent = gameMap[game.value];
+
+      // Idle summary text if nothing calculated yet
+      if (outputMain.style.display === "none") {
+        summarySubtitle.textContent = t.summaryIdle;
+      }
+
+      // Update dynamic labels
+      cpuLabel.textContent = mapCpuLabel(cpu.value, lang);
+      gpuLabel.textContent = mapGpuLabel(gpu.value, lang);
+      ramLabel.textContent = mapRamLabel(ram.value, lang);
+
+      // If already calculated, recalc profile in new language
+      if (outputMain.style.display !== "none") {
+        const power = calcPowerScore();
+        const gameId = game.value;
+        const resolution = Number(res.value);
+        const mode = profileMode.value;
+        const profile = getGameProfile(gameId, power, resolution, mode, lang);
+
+        fpsRange.textContent = profile.fps;
+        summarySubtitle.textContent = `${t.profilePrefix}: ${profile.preset} · ${t.powerScore}: ${power}`;
+
+        tagRow.innerHTML = "";
+        profile.tags.forEach(tag => {
+          const span = document.createElement("span");
+          span.className = "tag";
+          span.textContent = tag;
+          tagRow.appendChild(span);
+        });
+
+        settingsList.innerHTML = "";
+        profile.settings.forEach(s => {
+          const li = document.createElement("li");
+          li.textContent = s;
+          settingsList.appendChild(li);
+        });
+
+        tipsBox.innerHTML = `<strong>${t.tipLabel}</strong> ${profile.tips}`;
+      }
+    }
+
+    cpu.addEventListener("input", () => {
+      cpuLabel.textContent = mapCpuLabel(cpu.value, langSelect.value);
+    });
+
+    gpu.addEventListener("input", () => {
+      gpuLabel.textContent = mapGpuLabel(gpu.value, langSelect.value);
+    });
+
+    ram.addEventListener("change", () => {
+      ramLabel.textContent = mapRamLabel(ram.value, langSelect.value);
+    });
+
+    game.addEventListener("change", () => {
+      const gameMap = {
+        "valorant": "Valorant",
+        "fortnite": "Fortnite",
+        "warzone": "Warzone",
+        "minecraft": "Minecraft",
+        "arcreactors": "Arc Raiders"
+      };
+      gameLabelHint.textContent = gameMap[game.value];
+    });
+
+    langSelect.addEventListener("change", () => {
+      const lang = langSelect.value;
+      document.documentElement.lang = lang === "en" ? "en" : "de";
+      applyLanguage(lang);
+    });
+
     document.getElementById("calcBtn").addEventListener("click", () => {
+      const lang = langSelect.value;
+      const t = i18n[lang];
+
       const power = calcPowerScore();
       const gameId = game.value;
       const resolution = Number(res.value);
       const mode = profileMode.value;
 
-      const profile = getGameProfile(gameId, power, resolution, mode);
+      const profile = getGameProfile(gameId, power, resolution, mode, lang);
 
       fpsRange.textContent = profile.fps;
-      summarySubtitle.textContent = `Profil: ${profile.preset} · Power-Score: ${power}`;
+      summarySubtitle.textContent = `${t.profilePrefix}: ${profile.preset} · ${t.powerScore}: ${power}`;
 
       tagRow.innerHTML = "";
-      profile.tags.forEach(t => {
+      profile.tags.forEach(text => {
         const span = document.createElement("span");
         span.className = "tag";
-        span.textContent = t;
+        span.textContent = text;
         tagRow.appendChild(span);
       });
 
@@ -753,14 +1065,12 @@
         settingsList.appendChild(li);
       });
 
-      tipsBox.innerHTML = `<strong>Tipp:</strong> ${profile.tips}`;
+      tipsBox.innerHTML = `<strong>${t.tipLabel}</strong> ${profile.tips}`;
       outputMain.style.display = "flex";
     });
 
-    // Init labels
-    cpuLabel.textContent = mapCpuLabel(cpu.value);
-    gpuLabel.textContent = mapGpuLabel(gpu.value);
-    ramLabel.textContent = mapRamLabel(ram.value);
+    // Init defaults
+    applyLanguage("de");
   </script>
 </body>
 </html>
