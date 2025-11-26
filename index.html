@@ -19,10 +19,54 @@
   <div class="app">
     <div class="header">
       <div class="title">
-        <h1>
-          GSOpt
-          <span class="badge" id="badge">Game Settings Optimizer</span>
-        </h1>
+       <div class="logo-row">
+  <div class="logo-icon">
+    <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#020617"/>
+          <stop offset="50%" stop-color="#0f172a"/>
+          <stop offset="100%" stop-color="#020617"/>
+        </linearGradient>
+        <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="100%" stop-color="#2563eb"/>
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bgGrad)" />
+      <rect x="6" y="6" width="244" height="244" rx="50"
+            fill="none"
+            stroke="rgba(148,163,184,0.5)"
+            stroke-width="2" />
+
+      <g transform="translate(128,128)">
+        <circle r="70" fill="none" stroke="rgba(15,23,42,0.9)" stroke-width="18" />
+        <circle r="70" fill="none" stroke="url(#accentGrad)" stroke-width="18"
+                stroke-linecap="round"
+                stroke-dasharray="220 220"
+                stroke-dashoffset="-40" />
+
+        <rect x="0" y="-90" width="90" height="180" fill="url(#bgGrad)" />
+        <rect x="-20" y="0" width="70" height="16" rx="8" fill="url(#accentGrad)" />
+
+        <circle r="10" fill="#020617" stroke="#60a5fa" stroke-width="4" />
+        <line x1="-18" y1="0" x2="-32" y2="0" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+        <line x1="18" y1="0" x2="32" y2="0" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="-18" x2="0" y2="-32" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+        <line x1="0" y1="18" x2="0" y2="32" stroke="#60a5fa" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </svg>
+  </div>
+
+  <div>
+    <h1>
+      GSOpt
+      <span class="badge" id="badge">Game Settings Optimizer</span>
+    </h1>
+  </div>
+</div>
+
         <p class="subtitle" id="subtitle">
           Wähle deine Hardware, dein Spiel und deine Auflösung – GSOpt schlägt dir ein balanciertes Grafik-Setup vor.
         </p>
