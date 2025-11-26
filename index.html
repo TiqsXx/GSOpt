@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>GSOpt – Game Settings Optimizer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GSOpt berechnet optimale Game-Settings für deine Hardware: CPU, GPU, RAM, Auflösung und beliebte Spiele wie Valorant, Fortnite, Warzone oder Minecraft." />
   <style>
     :root {
       --bg: #0f172a;
@@ -418,7 +419,7 @@
             <option value="fortnite">Fortnite</option>
             <option value="warzone">Warzone</option>
             <option value="minecraft">Minecraft (Java/Bedrock)</option>
-            <option value="arcreactors">Arc Raiders</option>
+            <option value="arcraiders">Arc Raiders</option>
           </select>
         </div>
 
@@ -518,9 +519,8 @@
             </ul>
           </div>
 
-          <div class="tips" id="tipsBox">
-            <!-- tips via JS -->
-          </div>
+          <div class="tips" id="tipsBox"></div>
+          <div class="tips" id="upgradeBox"></div>
         </div>
       </div>
     </div>
@@ -550,6 +550,7 @@
     const tagRow = document.getElementById("tagRow");
     const settingsList = document.getElementById("settingsList");
     const tipsBox = document.getElementById("tipsBox");
+    const upgradeBox = document.getElementById("upgradeBox");
     const gameLabelHint = document.getElementById("gameLabelHint");
 
     const badge = document.getElementById("badge");
@@ -691,6 +692,52 @@
       const resVal = Number(res.value);
       const resPenalty = resVal === 1080 ? 0 : (resVal === 1440 ? 12 : 24);
       return cpuScore + gpuScore + ramScore - resPenalty;
+    }
+
+    function getUpgradeAdvice(cpuVal, gpuVal, ramVal, resVal, lang) {
+      const cpuScore = Number(cpuVal) * 12;
+      const gpuScore = Number(gpuVal) * 16;
+      const ramNum   = Number(ramVal);
+
+      const tCpu = "CPU";
+      const tGpu = "GPU";
+      const tRam = "RAM";
+
+      // grobe Bottleneck-Erkennung
+      let bottleneck = tGpu;
+      let explainKey = "gpu";
+
+      if (cpuScore < gpuScore - 10) {
+        bottleneck = tCpu;
+        explainKey = "cpu";
+      }
+
+      if (ramNum === 8) {
+        bottleneck = tRam;
+        explainKey = "ram";
+      }
+
+      const resLabel = resVal === 1080 ? "1080p" : (resVal === 1440 ? "1440p" : "4K");
+
+      if (lang === "en") {
+        if (explainKey === "cpu") {
+          return `Bottleneck: ${bottleneck}. For smoother FPS, a stronger 6–8 core CPU (e.g. recent Ryzen 5 / Intel i5) is ideal, especially in CPU-heavy games and at lower resolutions like ${resLabel}.`;
+        }
+        if (explainKey === "ram") {
+          return `Bottleneck: ${bottleneck}. 8 GB is the bare minimum. Upgrading to 16 GB or 32 GB can noticeably reduce stutters and background loading in modern games.`;
+        }
+        // GPU
+        return `Bottleneck: ${bottleneck}. For your settings and ${resLabel}, a current mid-range GPU (e.g. RTX 3060/4060 or RX 6600/7600 class) is a good target if you want clearly higher FPS.`;
+      } else {
+        if (explainKey === "cpu") {
+          return `Limitierend: ${bottleneck}. Für stabilere FPS lohnt sich eine stärkere 6–8-Kern-CPU (z.B. aktuelle Ryzen 5 / Intel i5), vor allem in CPU-lastigen Games und bei niedrigeren Auflösungen wie ${resLabel}.`;
+        }
+        if (explainKey === "ram") {
+          return `Limitierend: ${bottleneck}. 8 GB sind das absolute Minimum. Ein Upgrade auf 16 GB oder 32 GB reduziert Ruckler und Nachlader deutlich in modernen Spielen.`;
+        }
+        // GPU
+        return `Limitierend: ${bottleneck}. Für dein Setup und ${resLabel} ist eine aktuelle Mittelklasse-GPU (z.B. RTX 3060/4060 oder RX 6600/7600) ein guter Zielpunkt, wenn du deutlich mehr FPS möchtest.`;
+      }
     }
 
     function getGameProfile(gameId, powerScore, resolution, mode, lang) {
@@ -839,7 +886,7 @@
             : "Minecraft profitiert stark von mehr RAM-Zuweisung (aber nicht übertreiben). Java-Version und Modloader aktuell halten. Für FPS-Boost: Fabric + Performance-Mods verwenden.";
           break;
 
-        case "arcreactors": // Arc Raiders placeholder
+        case "arcraiders": // Arc Raiders
           base.preset =
             powerScore < 45
               ? (lang === "en" ? "Low/Medium, performance focus" : "Low/Medium Fokus Performance")
@@ -924,7 +971,9 @@
       const t = i18n[lang];
       badge.textContent = t.badge;
       subtitle.textContent = t.subtitle;
-      livePill.childNodes[2].textContent = " " + t.livePill; // keep dot span
+      // text-Knoten im Pill-Element aktualisieren (DOT bleibt erhalten)
+      livePill.childNodes[2].textContent = " " + t.livePill;
+
       cardInputTitle.textContent = t.cardInputTitle;
       cardInputSubtitle.textContent = t.cardInputSubtitle;
       labelGame.textContent = t.labelGame;
@@ -963,7 +1012,7 @@
         "fortnite": "Fortnite",
         "warzone": "Warzone",
         "minecraft": "Minecraft",
-        "arcreactors": "Arc Raiders"
+        "arcraiders": "Arc Raiders"
       };
       gameLabelHint.textContent = gameMap[game.value];
 
@@ -977,7 +1026,7 @@
       gpuLabel.textContent = mapGpuLabel(gpu.value, lang);
       ramLabel.textContent = mapRamLabel(ram.value, lang);
 
-      // If already calculated, recalc profile in new language
+      // Wenn schon berechnet wurde: Profil + Upgrade-Tipp neu generieren
       if (outputMain.style.display !== "none") {
         const power = calcPowerScore();
         const gameId = game.value;
@@ -1004,6 +1053,9 @@
         });
 
         tipsBox.innerHTML = `<strong>${t.tipLabel}</strong> ${profile.tips}`;
+
+        const upgradeText = getUpgradeAdvice(cpu.value, gpu.value, ram.value, resolution, lang);
+        upgradeBox.textContent = upgradeText;
       }
     }
 
@@ -1025,7 +1077,7 @@
         "fortnite": "Fortnite",
         "warzone": "Warzone",
         "minecraft": "Minecraft",
-        "arcreactors": "Arc Raiders"
+        "arcraiders": "Arc Raiders"
       };
       gameLabelHint.textContent = gameMap[game.value];
     });
@@ -1066,6 +1118,10 @@
       });
 
       tipsBox.innerHTML = `<strong>${t.tipLabel}</strong> ${profile.tips}`;
+
+      const upgradeText = getUpgradeAdvice(cpu.value, gpu.value, ram.value, resolution, lang);
+      upgradeBox.textContent = upgradeText;
+
       outputMain.style.display = "flex";
     });
 
