@@ -371,10 +371,11 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
+  width: 28px;
+  height: 28px;
   flex-shrink: 0;
 }
+
 
 .logo-icon svg {
   width: 100%;
